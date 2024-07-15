@@ -1,6 +1,5 @@
-from gui.app import App
+from gui.login import LoginWindow
 
 if __name__ == "__main__":
-    app = App()
+    app = LoginWindow()
     app.mainloop()
-    
