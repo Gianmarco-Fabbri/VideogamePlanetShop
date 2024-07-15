@@ -12,7 +12,7 @@
 -- Database Section
 -- ________________ 
 
-create database GameUniverse;
+
 
 
 -- DBSpace Section
@@ -36,7 +36,7 @@ create table ACQUIRENTE (
      isAbbonato boolean not null,
      nome char(20) not null,
      e_mail char(30) not null,
-     password char(15) not null,
+     password_account char(15) not null,
      nome_account char(15) not null,
      puntiSconto int not null,
      citta char(10) not null,
@@ -138,34 +138,34 @@ create table RECENSIONE (
      Compratore_e_mail char(30) not null,
      Venditore_e_mail char(30) not null,
      descrizione char(100) not null,
-     valutazione numeric(1) not null,
+     valutazione int not null,
      constraint ID_RECENSIONE_ID primary key (Compratore_e_mail, Venditore_e_mail));
 
 create table SCONTO (
      dataInizio date not null,
-     percentuale numeric(3) not null,
+     percentuale int not null,
      dataFine date not null,
-     id_annuncio numeric(10) not null,
+     id_annuncio int not null,
      constraint ID_SCONTO_ID primary key (dataInizio));
 
 create table specifica (
-     codice numeric(10) not null,
-     numeroSerie numeric(10) not null,
-     id_annuncio numeric(10) not null,
+     codice int not null,
+     numeroSerie int not null,
+     id_annuncio int not null,
      constraint ID_specifica_ID primary key (id_annuncio, codice, numeroSerie));
 
 create table SPECIFICHE_PRODOTTO (
-     isUsato char(1) not null,
-     condizioni char(1) not null,
-     codice numeric(10) not null,
+     isUsato boolean not null,
+     condizioni char(50) not null,
+     codice int not null,
      descrizione char(50) not null,
-     numeroSerie numeric(10) not null,
+     numeroSerie int not null,
      colore char(10) not null,
      constraint ID_SPECIFICHE_PRODOTTO_ID primary key (codice, numeroSerie));
 
 create table STATO_ORDINE (
      codStato char(1) not null,
-     descrizione char(1) not null,
+     descrizione char(50) not null,
      constraint ID_STATO_ORDINE_ID primary key (codStato));
 
 create table STORICO (
@@ -173,30 +173,30 @@ create table STORICO (
      stato char(20) not null,
      data_inizio date not null,
      data_fine date not null,
-     e_mail char(1) not null,
+     e_mail char(30) not null,
      constraint ID_STORICO_ID primary key (tipoAbbonamento, data_inizio, e_mail));
 
 create table TRACCIAMENTO (
-     nome_magazzino char(1) not null,
+     nome_magazzino char(20) not null,
      descrizione char(50) not null,
-     data date not null,
+     data_dettaglio date not null,
      ora char(5) not null,
      citta char(10) not null,
-     cap numeric(6) not null,
+     cap int not null,
      via char(20) not null,
-     numero numeric(3) not null,
-     constraint ID_TRACCIAMENTO_ID primary key (data, ora));
+     numero int not null,
+     constraint ID_TRACCIAMENTO_ID primary key (data_dettaglio, ora));
 
 create table VENDITORE (
-     isNegozio char not null,
-     nome char(1) not null,
-     e_mail char(1) not null,
-     password char(1) not null,
-     nome_account char(1) not null,
+     isNegozio boolean not null,
+     nome char(20) not null,
+     e_mail char(30) not null,
+     password_account char(15) not null,
+     nome_account char(15) not null,
      citta char(10) not null,
-     cap numeric(6) not null,
+     cap int not null,
      via char(20) not null,
-     numero numeric(3) not null,
+     numero int not null,
      constraint ID_VENDITORE_ID primary key (e_mail),
      constraint SID_VENDITORE_ID unique (nome_account));
 
@@ -265,12 +265,12 @@ alter table DETTAGLIO_ORDINE add constraint ID_DETTA_ANNUN_FK
      references ANNUNCIO;
 
 alter table DETTAGLIO_ORDINE add constraint EQU_DETTA_TRACC_FK
-     foreign key (data, ora)
+     foreign key (data_dettaglio, ora)
      references TRACCIAMENTO;
 
 alter table DETTAGLIO_ORDINE add constraint EQU_DETTA_TRACC_CHK
-     check((data is not null and ora is not null)
-           or (data is null and ora is null)); 
+     check((data_dettaglio is not null and ora is not null)
+           or (data_dettaglio is null and ora is null)); 
 
 alter table GENERAZIONE add constraint ID_GENERAZIONE_CHK
      check(exists(select * from Com_codice
