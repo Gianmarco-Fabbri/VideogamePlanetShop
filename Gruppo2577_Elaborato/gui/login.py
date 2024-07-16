@@ -8,7 +8,7 @@ from db.user_queries import get_user_type
 class LoginWindow(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.geometry("800x500")
+        self.geometry("800x500") 
         self.title("Login")
 
         tk.Label(self, text="Username").pack(pady=5)
