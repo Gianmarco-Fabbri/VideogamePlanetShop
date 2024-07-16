@@ -3,7 +3,7 @@
 -- *--------------------------------------------
 -- * DB-MAIN version: 11.0.2              
 -- * Generator date: Sep 14 2021              
--- * Generation date: Tue Jul 16 12:11:47 2024 
+-- * Generation date: Tue Jul 16 16:13:36 2024 
 -- * LUN file: C:\Users\forma\Desktop\Nuova cartella\VideogameShop (LOGICO).lun 
 -- * Schema: Game-Universe/1 
 -- ********************************************* 
@@ -22,7 +22,7 @@ use GameUniverse;
 create table ABBONAMENTO (
      tipoAbbonamento char(20) not null,
      durata bigint not null,
-     prezzo decimal(2,2) not null,
+     prezzo int not null,
      constraint IDTARIFFARIO primary key (tipoAbbonamento));
 
 create table ACCESSORIO (
@@ -30,12 +30,14 @@ create table ACCESSORIO (
      constraint FKPRO_ACC_ID primary key (codice));
 
 create table ACQUIRENTE (
-     isAbbonato char(1) not null,
+     isAbbonato boolean not null,
      email char(20) not null,
      puntiSconto int not null,
-     NON_ABBONATO char(20),
-     ABBONATO char(20),
      constraint FKUTE_ACQ_ID primary key (email));
+
+create table ADMIN (
+     email char(20) not null,
+     constraint FKUTE_ADM_ID primary key (email));
 
 create table ANNUNCIO (
      verificato char not null,
@@ -51,22 +53,34 @@ create table CASA_PRODUTTRICE (
      idCasaProduttrice int not null,
      constraint IDCASA_PRODUTTRICE primary key (idCasaProduttrice));
 
+create table compatibilità_accessorio (
+     idCasaProduttrice int not null,
+     numeroGenerazione int not null,
+     codice int not null,
+     constraint IDcompatibilità_accessorio primary key (idCasaProduttrice, numeroGenerazione, codice));
+
+create table compatibilità_console (
+     idCasaProduttrice int not null,
+     numeroGenerazione int not null,
+     codice int not null,
+     constraint IDcompatibilità_console primary key (idCasaProduttrice, numeroGenerazione, codice));
+
 create table CONSOLE (
      codice int not null,
      constraint FKPRO_CON_ID primary key (codice));
+
+create table dettaglio (
+     id_annuncio int not null,
+     codice int not null,
+     numeroSerie int not null,
+     constraint IDdettaglio primary key (id_annuncio, codice, numeroSerie));
 
 create table DETTAGLIO_ORDINE (
      id_annuncio int not null,
      Inc_id_annuncio int not null,
      idOrdine int not null,
-     data date,
-     ora char(5),
      constraint IDDETTAGLIO_ORDINE primary key (id_annuncio),
      constraint FKinclusione_ID unique (Inc_id_annuncio));
-
-create table ADMIN (
-     email char(20) not null,
-     constraint FKUTE_ADM_ID primary key (email));
 
 create table GENERAZIONE (
      idCasaProduttrice int not null,
@@ -91,24 +105,6 @@ create table METODO_PAGAMENTO (
      scadenza date not null,
      email char(20) not null,
      constraint IDMETODO_PAGAMENTO primary key (circuitoPagamento, codCarta, scadenza));
-
-create table compatibilità_accessorio (
-     idCasaProduttrice int not null,
-     numeroGenerazione int not null,
-     codice int not null,
-     constraint IDcompatibilità_accessorio primary key (idCasaProduttrice, numeroGenerazione, codice));
-
-create table compatibilità_console (
-     idCasaProduttrice int not null,
-     numeroGenerazione int not null,
-     codice int not null,
-     constraint IDcompatibilità_console primary key (idCasaProduttrice, numeroGenerazione, codice));
-
-create table dettaglio (
-     id_annuncio int not null,
-     codice int not null,
-     numeroSerie int not null,
-     constraint IDdettaglio primary key (id_annuncio, codice, numeroSerie));
 
 create table ORDINE (
      idOrdine int not null,
@@ -143,7 +139,7 @@ create table SCONTO (
 create table SPECIFICHE_PRODOTTO (
      codice int not null,
      condizioni char(1) not null,
-     isUsato char(1) not null,
+     isUsato boolean not null,
      descrizione char(50) not null,
      numeroSerie int not null,
      colore char(10) not null,
@@ -151,7 +147,7 @@ create table SPECIFICHE_PRODOTTO (
 
 create table STATO_ORDINE (
      codStato char(1) not null,
-     descrizione char(1) not null,
+     descrizione char(50) not null,
      constraint IDSTATO_ORDINE primary key (codStato));
 
 create table STORICO (
@@ -164,15 +160,16 @@ create table STORICO (
      constraint IDSTORICO primary key (email, Sto_tipoAbbonamento, tipoAbbonamento));
 
 create table TRACCIAMENTO (
-     nome_magazzino char(1) not null,
-     descrizione char(50) not null,
-     data date not null,
-     ora char(5) not null,
      città char(10) not null,
      cap int not null,
      via char(20) not null,
      numero int not null,
-     constraint IDTRACCIATO_ID primary key (data, ora));
+     id_annuncio int not null,
+     nome_magazzino char(20) not null,
+     descrizione char(50) not null,
+     data date not null,
+     ora char(5) not null,
+     constraint IDTRACCIAMENTO primary key (id_annuncio, città, cap, via, numero));
 
 create table UTENTE (
      nome char(15) not null,
@@ -207,11 +204,11 @@ alter table ACCESSORIO add constraint FKPRO_ACC_FK
      foreign key (codice)
      references PRODOTTO (codice);
 
-alter table ACQUIRENTE add constraint ISAACQUIRENTE
-     check((ABBONATO is not null and NON_ABBONATO is null)
-           or (ABBONATO is null and NON_ABBONATO is not null)); 
-
 alter table ACQUIRENTE add constraint FKUTE_ACQ_FK
+     foreign key (email)
+     references UTENTE (email);
+
+alter table ADMIN add constraint FKUTE_ADM_FK
      foreign key (email)
      references UTENTE (email);
 
@@ -224,6 +221,18 @@ alter table ANNUNCIO add constraint FKvendita
      foreign key (email)
      references VENDITORE (email);
 
+alter table compatibilità_accessorio add constraint FKcom_ACC
+     foreign key (codice)
+     references ACCESSORIO (codice);
+
+alter table compatibilità_console add constraint FKcom_CON
+     foreign key (codice)
+     references CONSOLE (codice);
+
+alter table compatibilità_console add constraint FKcom_GEN
+     foreign key (idCasaProduttrice, numeroGenerazione)
+     references GENERAZIONE (idCasaProduttrice, numeroGenerazione);
+
 -- Not implemented
 -- alter table CONSOLE add constraint FKPRO_CON_CHK
 --     check(exists(select * from compatibilità_console
@@ -233,25 +242,21 @@ alter table CONSOLE add constraint FKPRO_CON_FK
      foreign key (codice)
      references PRODOTTO (codice);
 
+alter table dettaglio add constraint FKdet_SPE
+     foreign key (codice, numeroSerie)
+     references SPECIFICHE_PRODOTTO (codice, numeroSerie);
+
+alter table dettaglio add constraint FKdet_ANN
+     foreign key (id_annuncio)
+     references ANNUNCIO (id_annuncio);
+
 alter table DETTAGLIO_ORDINE add constraint FKcomposizione
      foreign key (idOrdine)
      references ORDINE (idOrdine);
 
-alter table DETTAGLIO_ORDINE add constraint FKtracciato_FK
-     foreign key (data, ora)
-     references TRACCIAMENTO (data, ora);
-
-alter table DETTAGLIO_ORDINE add constraint FKtracciato_CHK
-     check((data is not null and ora is not null)
-           or (data is null and ora is null)); 
-
 alter table DETTAGLIO_ORDINE add constraint FKinclusione_FK
      foreign key (Inc_id_annuncio)
      references ANNUNCIO (id_annuncio);
-
-alter table ADMIN add constraint FKUTE_ADM_FK
-     foreign key (email)
-     references UTENTE (email);
 
 -- Not implemented
 -- alter table GENERAZIONE add constraint IDGENERAZIONE_CHK
@@ -274,26 +279,6 @@ alter table GIOCO add constraint FKPRO_GIO_FK
 alter table METODO_PAGAMENTO add constraint FKpossessione
      foreign key (email)
      references UTENTE (email);
-
-alter table compatibilità_accessorio add constraint FKcom_ACC
-     foreign key (codice)
-     references ACCESSORIO (codice);
-
-alter table compatibilità_accessorio add constraint FKcom_GEN
-     foreign key (idCasaProduttrice, numeroGenerazione)
-     references GENERAZIONE (idCasaProduttrice, numeroGenerazione);
-
-alter table compatibilità_console add constraint FKcom_CON
-     foreign key (codice)
-     references CONSOLE (codice);
-
-alter table dettaglio add constraint FKdet_SPE
-     foreign key (codice, numeroSerie)
-     references SPECIFICHE_PRODOTTO (codice, numeroSerie);
-
-alter table dettaglio add constraint FKdet_ANN
-     foreign key (id_annuncio)
-     references ANNUNCIO (id_annuncio);
 
 -- Not implemented
 -- alter table ORDINE add constraint IDORDINE_CHK
@@ -341,12 +326,11 @@ alter table STORICO add constraint FKstorico_abbonamento
      foreign key (Sto_tipoAbbonamento)
      references ABBONAMENTO (tipoAbbonamento);
 
--- Not implemented
--- alter table TRACCIAMENTO add constraint IDTRACCIATO_CHK
---     check(exists(select * from DETTAGLIO_ORDINE
---                  where DETTAGLIO_ORDINE.data = data and DETTAGLIO_ORDINE.ora = ora)); 
+alter table TRACCIAMENTO add constraint FKstorico_tracciamento_ordine
+     foreign key (id_annuncio)
+     references DETTAGLIO_ORDINE (id_annuncio);
 
-alter table TRACCIAMENTO add constraint FKposizione_corrente
+alter table TRACCIAMENTO add constraint FKstorico_tracciamento_indirizzo
      foreign key (città, cap, via, numero)
      references INDIRIZZO (città, cap, via, numero);
 
