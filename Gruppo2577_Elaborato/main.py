@@ -1,5 +1,5 @@
 from gui.login import LoginWindow
 
 if __name__ == "__main__":
-    app = LoginWindow()
-    app.mainloop()
+    VideogamePlanetShop = LoginWindow()
+    VideogamePlanetShop.mainloop()
