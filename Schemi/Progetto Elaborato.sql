@@ -167,7 +167,7 @@ create table TRACCIAMENTO (
      id_annuncio int not null,
      nome_magazzino char(20) not null,
      descrizione char(50) not null,
-     data date not null,
+     data_tracciamento date not null,
      ora char(5) not null,
      constraint IDTRACCIAMENTO primary key (id_annuncio, città, cap, via, numero));
 
@@ -188,7 +188,8 @@ create table UTENTE (
 
 create table VENDITORE (
      email char(20) not null,
-     isNegozio char(1) not null,
+     isBloccato boolean default False,
+     isNegozio boolean default False,
      constraint FKUTE_VEN_ID primary key (email));
 
 
