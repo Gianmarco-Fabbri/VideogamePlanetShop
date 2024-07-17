@@ -3,8 +3,8 @@
 -- *--------------------------------------------
 -- * DB-MAIN version: 11.0.2              
 -- * Generator date: Sep 14 2021              
--- * Generation date: Tue Jul 16 16:13:36 2024 
--- * LUN file: C:\Users\forma\Desktop\Nuova cartella\VideogameShop (LOGICO).lun 
+-- * Generation date: Wed Jul 17 12:02:53 2024 
+-- * LUN file: C:\Users\forma\Desktop\VideogamePlanetShop\Schemi\VideogameShop (LOGICO).lun 
 -- * Schema: Game-Universe/1 
 -- ********************************************* 
 
@@ -22,7 +22,7 @@ use GameUniverse;
 create table ABBONAMENTO (
      tipoAbbonamento char(20) not null,
      durata bigint not null,
-     prezzo int not null,
+     prezzo decimal(2,2) not null,
      constraint IDTARIFFARIO primary key (tipoAbbonamento));
 
 create table ACCESSORIO (
@@ -50,17 +50,17 @@ create table ANNUNCIO (
      constraint IDANNUNCIO_ID primary key (id_annuncio));
 
 create table CASA_PRODUTTRICE (
-     idCasaProduttrice int not null,
+     idCasaProduttrice char(10) not null,
      constraint IDCASA_PRODUTTRICE primary key (idCasaProduttrice));
 
 create table compatibilità_accessorio (
-     idCasaProduttrice int not null,
+     idCasaProduttrice char(10) not null,
      numeroGenerazione int not null,
      codice int not null,
      constraint IDcompatibilità_accessorio primary key (idCasaProduttrice, numeroGenerazione, codice));
 
 create table compatibilità_console (
-     idCasaProduttrice int not null,
+     idCasaProduttrice char(10) not null,
      numeroGenerazione int not null,
      codice int not null,
      constraint IDcompatibilità_console primary key (idCasaProduttrice, numeroGenerazione, codice));
@@ -70,10 +70,12 @@ create table CONSOLE (
      constraint FKPRO_CON_ID primary key (codice));
 
 create table dettaglio (
+     isUsato boolean not null,
+     condizioni char(10) not null,
      id_annuncio int not null,
      codice int not null,
      numeroSerie int not null,
-     constraint IDdettaglio primary key (id_annuncio, codice, numeroSerie));
+     constraint IDdettaglio primary key (codice, numeroSerie));
 
 create table DETTAGLIO_ORDINE (
      id_annuncio int not null,
@@ -83,7 +85,7 @@ create table DETTAGLIO_ORDINE (
      constraint FKinclusione_ID unique (Inc_id_annuncio));
 
 create table GENERAZIONE (
-     idCasaProduttrice int not null,
+     idCasaProduttrice char(10) not null,
      numeroGenerazione int not null,
      constraint IDGENERAZIONE_ID primary key (idCasaProduttrice, numeroGenerazione));
 
@@ -118,7 +120,7 @@ create table PRODOTTO (
      CONSOLE int,
      ACCESSORIO int,
      GIOCO int,
-     idCasaProduttrice int not null,
+     idCasaProduttrice char(10) not null,
      numeroGenerazione int not null,
      constraint IDPRODOTTO primary key (codice));
 
@@ -138,16 +140,14 @@ create table SCONTO (
 
 create table SPECIFICHE_PRODOTTO (
      codice int not null,
-     condizioni char(1) not null,
-     isUsato boolean not null,
      descrizione char(50) not null,
      numeroSerie int not null,
-     colore char(10) not null,
+     colore char(10) default "-",
      constraint IDSPECIFICHE_PRODOTTO primary key (codice, numeroSerie));
 
 create table STATO_ORDINE (
      codStato char(1) not null,
-     descrizione char(50) not null,
+     descrizione char(20) not null,
      constraint IDSTATO_ORDINE primary key (codStato));
 
 create table STORICO (
@@ -167,7 +167,7 @@ create table TRACCIAMENTO (
      id_annuncio int not null,
      nome_magazzino char(20) not null,
      descrizione char(50) not null,
-     data_tracciamento date not null,
+     data date not null,
      ora char(5) not null,
      constraint IDTRACCIAMENTO primary key (id_annuncio, città, cap, via, numero));
 
@@ -188,8 +188,8 @@ create table UTENTE (
 
 create table VENDITORE (
      email char(20) not null,
-     isBloccato boolean default False,
-     isNegozio boolean default False,
+     isBloccato tinyint not null,
+     isNegozio boolean not null,
      constraint FKUTE_VEN_ID primary key (email));
 
 
@@ -243,11 +243,11 @@ alter table CONSOLE add constraint FKPRO_CON_FK
      foreign key (codice)
      references PRODOTTO (codice);
 
-alter table dettaglio add constraint FKdet_SPE
+alter table dettaglio add constraint FKdettaglio_prodotto
      foreign key (codice, numeroSerie)
      references SPECIFICHE_PRODOTTO (codice, numeroSerie);
 
-alter table dettaglio add constraint FKdet_ANN
+alter table dettaglio add constraint FKdettaglio_annuncio
      foreign key (id_annuncio)
      references ANNUNCIO (id_annuncio);
 
