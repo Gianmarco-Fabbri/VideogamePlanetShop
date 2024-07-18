@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from db.buyer_queries import add_payment_method, place_order, subscribe, leave_review, get_best_sellers, get_worst_sellers
+from db.buyer_queries import *
 
 class BuyerWindow(tk.Toplevel):
     def __init__(self, parent, email):
@@ -12,8 +12,9 @@ class BuyerWindow(tk.Toplevel):
 
         self.create_payment_method_form()
         self.create_order_form()
-        self.create_subscription_button()
+        self.create_subscription_form()
         self.create_review_form()
+        self.create_order_history_button()
         self.create_rating_buttons()
 
     def create_payment_method_form(self):
@@ -38,9 +39,21 @@ class BuyerWindow(tk.Toplevel):
         order_button = tk.Button(form_frame, text="Effettua Ordine", command=self.place_order)
         order_button.grid(row=1, columnspan=2, pady=10)
 
-    def create_subscription_button(self):
-        subscription_button = tk.Button(self, text="Effettua Abbonamento", command=self.subscribe)
-        subscription_button.pack(pady=10)
+    def get_subscription_options(self):
+        options = get_subscription_options()
+        return [opt['tipoAbbonamento'] for opt in options]
+
+    def create_subscription_form(self):
+        form_frame = tk.Frame(self)
+        form_frame.pack(pady=10)
+
+        tk.Label(form_frame, text="Opzioni di Abbonamento").grid(row=0, column=0, pady=5, padx=5)
+        self.abbonamento_options = tk.StringVar()
+        self.abbonamento_menu = tk.OptionMenu(form_frame, self.abbonamento_options, *self.get_subscription_options())
+        self.abbonamento_menu.grid(row=0, column=1, pady=5, padx=5)
+
+        subscription_button = tk.Button(form_frame, text="Effettua Abbonamento", command=self.subscribe)
+        subscription_button.grid(row=1, columnspan=2, pady=10)
 
     def create_review_form(self):
         form_frame = tk.Frame(self)
@@ -60,6 +73,10 @@ class BuyerWindow(tk.Toplevel):
 
         review_button = tk.Button(form_frame, text="Lascia Recensione", command=self.leave_review)
         review_button.grid(row=3, columnspan=2, pady=10)
+
+    def create_order_history_button(self):
+        history_button = tk.Button(self, text="Visualizza Storico Ordini", command=self.show_order_history)
+        history_button.pack(pady=10)
 
     def create_rating_buttons(self):
         rating_frame = tk.Frame(self)
@@ -91,45 +108,66 @@ class BuyerWindow(tk.Toplevel):
             messagebox.showinfo("Successo", result)
 
     def subscribe(self):
-        result = subscribe(self.email)
-        if "Errore" in result:
-            messagebox.showerror("Errore", result)
-        else:
-            messagebox.showinfo("Successo", result)
-
-    def leave_review(self):
-        email_venditore = self.email_venditore_entry.get()
-        recensione = self.recensione_entry.get()
-        punteggio = self.punteggio_entry.get()
+        tipo_abbonamento = self.abbonamento_options.get()
         
-        result = leave_review(self.email, email_venditore, recensione, punteggio)
+        result = subscribe(self.email, tipo_abbonamento)
         if "Errore" in result:
             messagebox.showerror("Errore", result)
         else:
             messagebox.showinfo("Successo", result)
 
-    def show_best_sellers(self):
-        result = get_best_sellers()
-        if "Errore" in result:
-            messagebox.showerror("Errore", result)
-        else:
-            self.display_sellers(result, "Migliori Venditori")
+def leave_review(self):
+    email_venditore = self.email_venditore_entry.get()
+    recensione = self.recensione_entry.get()
+    punteggio = self.punteggio_entry.get()
+    
+    result = leave_review(self.email, email_venditore, recensione, punteggio)
+    if "Errore" in result:
+        messagebox.showerror("Errore", result)
+    else:
+        messagebox.showinfo("Successo", result)
 
-    def show_worst_sellers(self):
-        result = get_worst_sellers()
-        if "Errore" in result:
-            messagebox.showerror("Errore", result)
-        else:
-            self.display_sellers(result, "Peggiori Venditori")
+def show_order_history(self):
+    result = get_order_history(self.email)
+    if "Errore" in result:
+        messagebox.showerror("Errore", result)
+    else:
+        self.display_order_history(result)
 
-    def display_sellers(self, sellers, title):
-        window = tk.Toplevel(self)
-        window.title(title)
-        tk.Label(window, text=title, font=("Arial", 14)).pack(pady=10)
+def show_best_sellers(self):
+    result = get_best_sellers()
+    if "Errore" in result:
+        messagebox.showerror("Errore", result)
+    else:
+        self.display_sellers(result, "Migliori Venditori")
 
-        for seller in sellers:
-            text = f"Email: {seller['email']}, Media Punteggio: {seller['media_punteggio']:.2f}"
-            tk.Label(window, text=text).pack(pady=5, padx=10)
+def show_worst_sellers(self):
+    result = get_worst_sellers()
+    if "Errore" in result:
+        messagebox.showerror("Errore", result)
+    else:
+        self.display_sellers(result, "Peggiori Venditori")
 
-        close_button = tk.Button(window, text="Chiudi", command=window.destroy)
-        close_button.pack(pady=10)
+def display_order_history(self, orders):
+    window = tk.Toplevel(self)
+    window.title("Storico Ordini")
+    tk.Label(window, text="Storico Ordini", font=("Arial", 14)).pack(pady=10)
+
+    for order in orders:
+        text = f"ID Ordine: {order['idOrdine']}, Titolo: {order['titolo']}, Prezzo: {order['prezzo']}, Stato: {order['codStato']}"
+        tk.Label(window, text=text).pack(pady=5, padx=10)
+
+    close_button = tk.Button(window, text="Chiudi", command=window.destroy)
+    close_button.pack(pady=10)
+
+def display_sellers(self, sellers, title):
+    window = tk.Toplevel(self)
+    window.title(title)
+    tk.Label(window, text=title, font=("Arial", 14)).pack(pady=10)
+
+    for seller in sellers:
+        text = f"Email: {seller['email']}, Media Valutazione: {seller['media_valutazione']:.2f}"
+        tk.Label(window, text=text).pack(pady=5, padx=10)
+
+    close_button = tk.Button(window, text="Chiudi", command=window.destroy)
+    close_button.pack(pady=10)

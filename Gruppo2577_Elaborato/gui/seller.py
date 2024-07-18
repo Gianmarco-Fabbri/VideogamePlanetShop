@@ -1,7 +1,7 @@
 import tkinter as tk
 import db.seller_queries as dbsq
 from tkinter import messagebox
-from db.seller_queries import my_annunci, create_annuncio, delete_annuncio, apply_discount, product_best_seller
+from db.seller_queries import *
 
 class SellerWindow(tk.Toplevel):
     def __init__(self, parent, email):
@@ -27,8 +27,8 @@ class SellerWindow(tk.Toplevel):
         self.descrizione_entry.grid(row=1, column=1, pady=5, padx=5)
 
         tk.Label(form_frame, text="Prezzo").grid(row=2, column=0, pady=5, padx=5)
-        self.data_entry = tk.Entry(form_frame)
-        self.data_entry.grid(row=2, column=1, pady=5, padx=5)
+        self.prezzo_entry = tk.Entry(form_frame)
+        self.prezzo_entry.grid(row=2, column=1, pady=5, padx=5)
 
         create_button = tk.Button(form_frame, text="Crea Annuncio", command=self.create_announcement)
         create_button.grid(row=4, columnspan=2, pady=10)
@@ -60,7 +60,7 @@ class SellerWindow(tk.Toplevel):
     def create_announcement(self):
         titolo = self.titolo_entry.get()
         descrizione = self.descrizione_entry.get()
-        prezzo = self.punti_entry.get()
+        prezzo = self.prezzo_entry.get()
         
         result = create_annuncio(self.email, titolo, descrizione, prezzo)
         if "Errore" in result:

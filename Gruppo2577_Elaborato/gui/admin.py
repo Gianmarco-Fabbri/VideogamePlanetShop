@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from db.admin_queries import add_user, block_user, unblock_user
+from db.admin_queries import *
 
 class AdminWindow(tk.Toplevel):
     def __init__(self, parent):
