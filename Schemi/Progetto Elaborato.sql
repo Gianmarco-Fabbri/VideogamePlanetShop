@@ -22,7 +22,7 @@ use GameUniverse;
 create table ABBONAMENTO (
      tipoAbbonamento char(20) not null,
      durata bigint not null,
-     prezzo decimal(2,2) not null,
+     prezzo decimal(4,2) not null,
      constraint IDTARIFFARIO primary key (tipoAbbonamento));
 
 create table ACCESSORIO (
@@ -40,12 +40,11 @@ create table ADMIN (
      constraint FKUTE_ADM_ID primary key (email));
 
 create table ANNUNCIO (
-     verificato char not null,
      punti_prodotto int not null,
      id_annuncio int not null,
      titolo char(15) not null,
+     prezzo int not null,
      descrizione char(50) not null,
-     dataAnnuncio date not null,
      email char(20) not null,
      constraint IDANNUNCIO_ID primary key (id_annuncio));
 
@@ -69,7 +68,7 @@ create table CONSOLE (
      codice int not null,
      constraint FKPRO_CON_ID primary key (codice));
 
-create table dettaglio (
+create table DETTAGLIO (
      isUsato boolean not null,
      condizioni char(10) not null,
      id_annuncio int not null,
@@ -132,11 +131,9 @@ create table RECENSIONE (
      constraint IDRECENSIONE primary key (email_acquirente, email_venditore));
 
 create table SCONTO (
-     dataInizio date not null,
      percentuale int not null,
-     dataFine date not null,
      id_annuncio int not null,
-     constraint IDSCONTO primary key (dataInizio));
+     constraint IDSCONTO primary key (percentuale, id_annuncio));
 
 create table SPECIFICHE_PRODOTTO (
      codice int not null,
@@ -172,16 +169,16 @@ create table TRACCIAMENTO (
      constraint IDTRACCIAMENTO primary key (id_annuncio, città, cap, via, numero));
 
 create table UTENTE (
-     nome char(15) not null,
-     email char(20) not null,
+     nome char(20) not null,
+     email char(50) not null,
      nome_account char(20) not null,
      password char(10) not null,
-     ACQUIRENTE char(20),
-     ADMIN char(20),
-     VENDITORE char(20),
-     città char(10) not null,
+     ACQUIRENTE char(50),
+     ADMIN char(50),
+     VENDITORE char(50),
+     città char(15) not null,
      cap int not null,
-     via char(20) not null,
+     via char(30) not null,
      numero int not null,
      constraint IDUTENTE_ID primary key (email),
      constraint IDUTENTE_1 unique (nome_account));
@@ -243,11 +240,11 @@ alter table CONSOLE add constraint FKPRO_CON_FK
      foreign key (codice)
      references PRODOTTO (codice);
 
-alter table dettaglio add constraint FKdettaglio_prodotto
+alter table DETTAGLIO add constraint FKdettaglio_prodotto
      foreign key (codice, numeroSerie)
      references SPECIFICHE_PRODOTTO (codice, numeroSerie);
 
-alter table dettaglio add constraint FKdettaglio_annuncio
+alter table DETTAGLIO add constraint FKdettaglio_annuncio
      foreign key (id_annuncio)
      references ANNUNCIO (id_annuncio);
 

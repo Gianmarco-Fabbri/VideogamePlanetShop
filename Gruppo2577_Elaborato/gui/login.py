@@ -11,21 +11,25 @@ class LoginWindow(tk.Tk):
         self.geometry("800x500") 
         self.title("Login")
 
-        tk.Label(self, text="Username").pack(pady=5)
-        self.username_entry = tk.Entry(self)
-        self.username_entry.pack(pady=5)
+        #per premere invio e fare login
+        self.bind('<Return>', self.login_key_return)
 
-        tk.Label(self, text="Email").pack(pady=5)
-        self.email_entry = tk.Entry(self)
-        self.email_entry.pack(pady=5)
+        frame = tk.Frame(self)
+        frame.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
 
-        tk.Label(self, text="Password").pack(pady=5)
-        self.password_entry = tk.Entry(self, show='*')
-        self.password_entry.pack(pady=5)
+        tk.Label(frame, text="Email").grid(row=0, column=0, pady=5, padx=5)
+        self.email_entry = tk.Entry(frame)
+        self.email_entry.grid(row=0, column=1, pady=5, padx=5)
 
-        login_button = tk.Button(self, text="Login", command=self.login)
-        login_button.pack(pady=10)
+        tk.Label(frame, text="Password").grid(row=1, column=0, pady=5, padx=5)
+        self.password_entry = tk.Entry(frame, show='*')
+        self.password_entry.grid(row=1, column=1, pady=5, padx=5)
+
+        login_button = tk.Button(frame, text="Login", command=self.login)
+        login_button.grid(row=2, columnspan=2, pady=10)
         
+    def login_key_return(self, event):
+        self.login()
 
     def login(self):
         email = self.email_entry.get()

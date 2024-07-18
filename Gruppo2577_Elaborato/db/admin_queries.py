@@ -5,7 +5,7 @@ def add_user(email, nome, nome_account, password, ruolo, città, cap, via, numer
     ruolo_column = {
         "compratore": "ACQUIRENTE",
         "venditore": "VENDITORE"
-    }
+    } 
     query = """
     INSERT INTO UTENTE (nome, email, nome_account, password, ACQUIRENTE, ADMIN, VENDITORE, città, cap, via, numero) 
     VALUES (%s, %s, %s, %s, %s, NULL, %s, %s, %s, %s, %s)
@@ -15,7 +15,7 @@ def add_user(email, nome, nome_account, password, ruolo, città, cap, via, numer
               città, cap, via, numero)
     
     query2 = "INSERT INTO VENDITORE (email, isBloccato, isNegozio) VALUES (%s, %s, %s)"
-    query3 = "INSERT INTO COMPRATORE (isAbbonato, email, puntiSconto) VALUES (%s, %s, %s)"
+    query3 = "INSERT INTO ACQUIRENTE (isAbbonato, email, puntiSconto) VALUES (%s, %s, %s)"
     params2 = (email, 0, 0)
     params3 = (0, email, 0)
 
