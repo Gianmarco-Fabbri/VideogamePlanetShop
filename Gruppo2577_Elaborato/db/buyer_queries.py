@@ -82,3 +82,14 @@ def get_worst_sellers():
     LIMIT 5
     """
     return execute_query(query)
+
+def get_buyable_announcment():
+    query = """
+    SELECT id_annuncio
+    FROM ANNUNCIO a
+    LEFT JOIN DETTAGLIO_ORDINE do ON a.id_annuncio = do.id_annuncio
+    WHERE do.id_annuncio IS NULL
+    """
+    result = execute_query(query)
+    list_annunci = [r['id_annuncio'] for r in result]
+    return list_annunci

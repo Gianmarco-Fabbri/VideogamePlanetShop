@@ -31,7 +31,7 @@ create table ACCESSORIO (
 
 create table ACQUIRENTE (
      isAbbonato boolean not null,
-     email char(20) not null,
+     email char(50) not null,
      puntiSconto int not null,
      constraint FKUTE_ACQ_ID primary key (email));
 
@@ -42,24 +42,25 @@ create table ADMIN (
 create table ANNUNCIO (
      punti_prodotto int not null,
      id_annuncio int not null,
-     titolo char(15) not null,
+     titolo char(20) not null,
      prezzo int not null,
-     descrizione char(50) not null,
-     email char(20) not null,
-     constraint IDANNUNCIO_ID primary key (id_annuncio));
+     descrizione char(60) not null,
+     email char(50) not null,
+     sconto int default 0,
+     constraint IDANNUNCIO_ID primary key (id_annuncio, email));
 
 create table CASA_PRODUTTRICE (
-     idCasaProduttrice char(10) not null,
+     idCasaProduttrice char(15) not null,
      constraint IDCASA_PRODUTTRICE primary key (idCasaProduttrice));
 
 create table compatibilità_accessorio (
-     idCasaProduttrice char(10) not null,
+     idCasaProduttrice char(15) not null,
      numeroGenerazione int not null,
      codice int not null,
      constraint IDcompatibilità_accessorio primary key (idCasaProduttrice, numeroGenerazione, codice));
 
 create table compatibilità_console (
-     idCasaProduttrice char(10) not null,
+     idCasaProduttrice char(15) not null,
      numeroGenerazione int not null,
      codice int not null,
      constraint IDcompatibilità_console primary key (idCasaProduttrice, numeroGenerazione, codice));
@@ -70,21 +71,21 @@ create table CONSOLE (
 
 create table DETTAGLIO (
      isUsato boolean not null,
-     condizioni char(10) not null,
+     condizioni char(20) not null,
      id_annuncio int not null,
+     email char(50) not null,
      codice int not null,
      numeroSerie int not null,
      constraint IDdettaglio primary key (codice, numeroSerie));
 
 create table DETTAGLIO_ORDINE (
      id_annuncio int not null,
-     Inc_id_annuncio int not null,
+     email char(50) not null,
      idOrdine int not null,
-     constraint IDDETTAGLIO_ORDINE primary key (id_annuncio),
-     constraint FKinclusione_ID unique (Inc_id_annuncio));
+     constraint IDDETTAGLIO_ORDINE primary key (id_annuncio, email));
 
 create table GENERAZIONE (
-     idCasaProduttrice char(10) not null,
+     idCasaProduttrice char(15) not null,
      numeroGenerazione int not null,
      constraint IDGENERAZIONE_ID primary key (idCasaProduttrice, numeroGenerazione));
 
@@ -93,23 +94,23 @@ create table GIOCO (
      constraint FKPRO_GIO_ID primary key (codice));
 
 create table INDIRIZZO (
-     città char(10) not null,
+     città char(20) not null,
      cap int not null,
-     via char(20) not null,
+     via char(30) not null,
      numero int not null,
      constraint IDINDIRIZZO primary key (città, cap, via, numero));
 
 create table METODO_PAGAMENTO (
-     tipologiaCarta char(10) not null,
+     tipologiaCarta char(20) not null,
      circuitoPagamento char(20) not null,
      codCarta bigint not null,
      scadenza date not null,
-     email char(20) not null,
+     email char(50) not null,
      constraint IDMETODO_PAGAMENTO primary key (circuitoPagamento, codCarta, scadenza));
 
 create table ORDINE (
      idOrdine int not null,
-     email char(20) not null,
+     email char(50) not null,
      codStato char(1) not null,
      constraint IDORDINE_ID primary key (idOrdine));
 
@@ -119,21 +120,16 @@ create table PRODOTTO (
      CONSOLE int,
      ACCESSORIO int,
      GIOCO int,
-     idCasaProduttrice char(10) not null,
+     idCasaProduttrice char(15) not null,
      numeroGenerazione int not null,
      constraint IDPRODOTTO primary key (codice));
 
 create table RECENSIONE (
-     email_acquirente char(20) not null,
-     email_venditore char(20) not null,
+     email_acquirente char(50) not null,
+     email_venditore char(50) not null,
      descrizione char(100) not null,
      valutazione int not null,
      constraint IDRECENSIONE primary key (email_acquirente, email_venditore));
-
-create table SCONTO (
-     percentuale int not null,
-     id_annuncio int not null,
-     constraint IDSCONTO primary key (percentuale, id_annuncio));
 
 create table SPECIFICHE_PRODOTTO (
      codice int not null,
@@ -149,7 +145,7 @@ create table STATO_ORDINE (
 
 create table STORICO (
      Sto_tipoAbbonamento char(20) not null,
-     email char(20) not null,
+     email char(50) not null,
      tipoAbbonamento char(20) not null,
      stato char(20) not null,
      data_inizio date not null,
@@ -184,7 +180,7 @@ create table UTENTE (
      constraint IDUTENTE_1 unique (nome_account));
 
 create table VENDITORE (
-     email char(20) not null,
+     email char(50) not null,
      isBloccato tinyint not null,
      isNegozio boolean not null,
      constraint FKUTE_VEN_ID primary key (email));
@@ -245,16 +241,16 @@ alter table DETTAGLIO add constraint FKdettaglio_prodotto
      references SPECIFICHE_PRODOTTO (codice, numeroSerie);
 
 alter table DETTAGLIO add constraint FKdettaglio_annuncio
-     foreign key (id_annuncio)
-     references ANNUNCIO (id_annuncio);
+     foreign key (id_annuncio, email)
+     references ANNUNCIO (id_annuncio, email);
 
 alter table DETTAGLIO_ORDINE add constraint FKcomposizione
      foreign key (idOrdine)
      references ORDINE (idOrdine);
 
 alter table DETTAGLIO_ORDINE add constraint FKinclusione_FK
-     foreign key (Inc_id_annuncio)
-     references ANNUNCIO (id_annuncio);
+     foreign key (id_annuncio, email)
+     references ANNUNCIO (id_annuncio, email);
 
 -- Not implemented
 -- alter table GENERAZIONE add constraint IDGENERAZIONE_CHK
@@ -307,10 +303,6 @@ alter table RECENSIONE add constraint FKvalutazione
 alter table RECENSIONE add constraint FKfeedback
      foreign key (email_acquirente)
      references ACQUIRENTE (email);
-
-alter table SCONTO add constraint FKsconto
-     foreign key (id_annuncio)
-     references ANNUNCIO (id_annuncio);
 
 alter table SPECIFICHE_PRODOTTO add constraint FKcaratteristica
      foreign key (codice)
