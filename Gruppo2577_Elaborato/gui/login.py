@@ -14,6 +14,8 @@ class LoginWindow(tk.Tk):
         #per premere invio e fare login
         self.bind('<Return>', self.login_key_return)
 
+        self.protocol("WM_DELETE_WINDOW", self.quit)
+
         frame = tk.Frame(self)
         frame.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
 

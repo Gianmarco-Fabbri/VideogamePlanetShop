@@ -7,8 +7,9 @@ class SellerWindow(tk.Toplevel):
         super().__init__(parent)
         self.title("Pannello Venditore")
         self.email = email
-        self.geometry("1000x700")  # Aggiustiamo la dimensione della finestra
-
+        self.parent = parent
+        self.geometry("1000x700")
+ 
         self.create_layout()
 
     def create_layout(self):
@@ -24,6 +25,20 @@ class SellerWindow(tk.Toplevel):
         self.create_add_specifica_form(right_frame)
         self.create_my_annunci_button(right_frame)
         self.create_view_recensioni_button(right_frame)
+        self.create_back_button()
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def on_closing(self):
+        self.parent.destroy()
+        self.quit()
+
+    def create_back_button(self):
+        back_button = tk.Button(self, text="←", command=self.go_back)
+        back_button.place(x=10, y=10)
+
+    def go_back(self):
+        self.destroy()
+        self.master.deiconify()
 
     def create_annuncio_form(self, parent):
         form_frame = tk.LabelFrame(parent, text="Crea Annuncio")
@@ -57,7 +72,7 @@ class SellerWindow(tk.Toplevel):
         self.colore_entry = tk.Entry(form_frame)
         self.colore_entry.grid(row=6, column=1, pady=5, padx=5)
 
-        tk.Label(form_frame, text="Usato (0 o 1)").grid(row=7, column=0, pady=5, padx=5)
+        tk.Label(form_frame, text="Stato (0 = Nuovo / 1 = Usato)").grid(row=7, column=0, pady=5, padx=5)
         self.usato_entry = tk.Entry(form_frame)
         self.usato_entry.grid(row=7, column=1, pady=5, padx=5)
 
@@ -66,7 +81,7 @@ class SellerWindow(tk.Toplevel):
         self.condizioni_entry.grid(row=8, column=1, pady=5, padx=5)
 
         create_annuncio_button = tk.Button(form_frame, text="Crea Annuncio", command=self.create_annuncio)
-        create_annuncio_button.grid(row=9, columnspan=2, pady=10)
+        create_annuncio_button.grid(row=9, columnspan=1000, pady=10)
 
     def create_delete_annuncio_form(self, parent):
         form_frame = tk.LabelFrame(parent, text="Elimina Annuncio")
@@ -118,7 +133,7 @@ class SellerWindow(tk.Toplevel):
         self.colore_specifica_entry = tk.Entry(form_frame)
         self.colore_specifica_entry.grid(row=4, column=1, pady=5, padx=5)
 
-        tk.Label(form_frame, text="Usato (0 o 1)").grid(row=5, column=0, pady=5, padx=5)
+        tk.Label(form_frame, text="Stato (0 = Nuovo / 1 = Usato)").grid(row=5, column=0, pady=5, padx=5)
         self.is_usato_specifica_entry = tk.Entry(form_frame)
         self.is_usato_specifica_entry.grid(row=5, column=1, pady=5, padx=5)
 

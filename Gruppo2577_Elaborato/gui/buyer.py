@@ -7,7 +7,9 @@ class BuyerWindow(tk.Toplevel):
         super().__init__(parent)
         self.title("Pannello Acquirente")
         self.email = email
-        
+        self.parent = parent
+        self.geometry("500x700")
+         
         tk.Label(self, text="Pannello Acquirente", font=("Arial", 14)).pack(pady=10)
 
         self.carrello = []  # Lista per tenere traccia degli annunci nel carrello
@@ -18,6 +20,20 @@ class BuyerWindow(tk.Toplevel):
         self.create_order_history_button()
         self.create_rating_buttons()
         self.create_cart_section()
+        self.create_back_button()
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def on_closing(self):
+        self.parent.destroy()
+        self.quit
+
+    def create_back_button(self):
+        back_button = tk.Button(self, text="←", command=self.go_back)
+        back_button.place(x=10, y=10)
+
+    def go_back(self):
+        self.destroy()
+        self.master.deiconify()
 
     def create_payment_method_form(self):
         form_frame = tk.Frame(self)
