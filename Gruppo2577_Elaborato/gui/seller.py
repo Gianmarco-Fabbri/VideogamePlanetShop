@@ -7,7 +7,8 @@ class SellerWindow(tk.Toplevel):
         super().__init__(parent)
         self.title("Pannello Venditore")
         self.email = email
-        
+        self.geometry("1000x700")  # Aggiustiamo la dimensione della finestra
+
         self.create_layout()
 
     def create_layout(self):
@@ -22,10 +23,11 @@ class SellerWindow(tk.Toplevel):
         self.create_discount_form(left_frame)
         self.create_add_specifica_form(right_frame)
         self.create_my_annunci_button(right_frame)
+        self.create_view_recensioni_button(right_frame)
 
     def create_annuncio_form(self, parent):
         form_frame = tk.LabelFrame(parent, text="Crea Annuncio")
-        form_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+        form_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         tk.Label(form_frame, text="Titolo").grid(row=0, column=0, pady=5, padx=5)
         self.titolo_entry = tk.Entry(form_frame)
@@ -56,56 +58,30 @@ class SellerWindow(tk.Toplevel):
         self.colore_entry.grid(row=6, column=1, pady=5, padx=5)
 
         tk.Label(form_frame, text="Usato (0 o 1)").grid(row=7, column=0, pady=5, padx=5)
-        self.is_usato_entry = tk.Entry(form_frame)
-        self.is_usato_entry.grid(row=7, column=1, pady=5, padx=5)
+        self.usato_entry = tk.Entry(form_frame)
+        self.usato_entry.grid(row=7, column=1, pady=5, padx=5)
 
         tk.Label(form_frame, text="Condizioni").grid(row=8, column=0, pady=5, padx=5)
         self.condizioni_entry = tk.Entry(form_frame)
         self.condizioni_entry.grid(row=8, column=1, pady=5, padx=5)
 
-        create_button = tk.Button(form_frame, text="Crea Annuncio", command=self.create_annuncio)
-        create_button.grid(row=9, columnspan=2, pady=10)
-
-    def create_annuncio(self):
-        titolo = self.titolo_entry.get()
-        descrizione = self.descrizione_entry.get()
-        prezzo = self.prezzo_entry.get()
-        codice = self.codice_entry.get()
-        numero_serie = self.numero_serie_entry.get()
-        desc_prodotto = self.desc_prodotto_entry.get()
-        colore = self.colore_entry.get()
-        is_usato = self.is_usato_entry.get()
-        condizioni = self.condizioni_entry.get()
-        
-        result = create_annuncio(self.email, titolo, descrizione, prezzo, codice, numero_serie, desc_prodotto, colore, is_usato, condizioni)
-        if "Errore" in result:
-            messagebox.showerror("Errore", result)
-        else:
-            messagebox.showinfo("Successo", "Annuncio creato con successo")
+        create_annuncio_button = tk.Button(form_frame, text="Crea Annuncio", command=self.create_annuncio)
+        create_annuncio_button.grid(row=9, columnspan=2, pady=10)
 
     def create_delete_annuncio_form(self, parent):
         form_frame = tk.LabelFrame(parent, text="Elimina Annuncio")
-        form_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+        form_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         tk.Label(form_frame, text="ID Annuncio").grid(row=0, column=0, pady=5, padx=5)
-        self.id_annuncio_entry = tk.Entry(form_frame)
-        self.id_annuncio_entry.grid(row=0, column=1, pady=5, padx=5)
+        self.id_annuncio_delete_entry = tk.Entry(form_frame)
+        self.id_annuncio_delete_entry.grid(row=0, column=1, pady=5, padx=5)
 
-        delete_button = tk.Button(form_frame, text="Elimina Annuncio", command=self.delete_annuncio)
-        delete_button.grid(row=1, columnspan=2, pady=10)
-
-    def delete_annuncio(self):
-        id_annuncio = self.id_annuncio_entry.get()
-        
-        result = delete_annuncio(self.email, id_annuncio)
-        if "Errore" in result:
-            messagebox.showerror("Errore", result)
-        else:
-            messagebox.showinfo("Successo", "Annuncio eliminato con successo")
+        delete_annuncio_button = tk.Button(form_frame, text="Elimina Annuncio", command=self.delete_annuncio)
+        delete_annuncio_button.grid(row=1, columnspan=2, pady=10)
 
     def create_discount_form(self, parent):
         form_frame = tk.LabelFrame(parent, text="Applica Sconto")
-        form_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+        form_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         tk.Label(form_frame, text="ID Annuncio").grid(row=0, column=0, pady=5, padx=5)
         self.id_annuncio_sconto_entry = tk.Entry(form_frame)
@@ -115,22 +91,12 @@ class SellerWindow(tk.Toplevel):
         self.sconto_entry = tk.Entry(form_frame)
         self.sconto_entry.grid(row=1, column=1, pady=5, padx=5)
 
-        discount_button = tk.Button(form_frame, text="Applica Sconto", command=self.apply_discount)
-        discount_button.grid(row=2, columnspan=2, pady=10)
-
-    def apply_discount(self):
-        id_annuncio = self.id_annuncio_sconto_entry.get()
-        sconto = self.sconto_entry.get()
-        
-        result = apply_discount(self.email, id_annuncio, sconto)
-        if "Errore" in result:
-            messagebox.showerror("Errore", result)
-        else:
-            messagebox.showinfo("Successo", "Sconto applicato con successo")
+        apply_sconto_button = tk.Button(form_frame, text="Applica Sconto", command=self.apply_sconto)
+        apply_sconto_button.grid(row=2, columnspan=2, pady=10)
 
     def create_add_specifica_form(self, parent):
         form_frame = tk.LabelFrame(parent, text="Aggiungi Specifica Prodotto")
-        form_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+        form_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         tk.Label(form_frame, text="ID Annuncio").grid(row=0, column=0, pady=5, padx=5)
         self.id_annuncio_specifica_entry = tk.Entry(form_frame)
@@ -163,36 +129,25 @@ class SellerWindow(tk.Toplevel):
         add_specifica_button = tk.Button(form_frame, text="Aggiungi Specifica", command=self.add_specifica)
         add_specifica_button.grid(row=7, columnspan=2, pady=10)
 
-    def add_specifica(self):
-        id_annuncio = self.id_annuncio_specifica_entry.get()
-        codice = self.codice_specifica_entry.get()
-        numero_serie = self.numero_serie_specifica_entry.get()
-        descrizione_prodotto = self.desc_prodotto_specifica_entry.get()
-        colore = self.colore_specifica_entry.get()
-        is_usato = self.is_usato_specifica_entry.get()
-        condizioni = self.condizioni_specifica_entry.get()
-        
-        result = modify_annuncio(id_annuncio, self.email, codice, numero_serie, descrizione_prodotto, colore, is_usato, condizioni)
-        if "Errore" in result:
-            messagebox.showerror("Errore", result)
-        else:
-            messagebox.showinfo("Successo", "Specifica aggiunta con successo")
-
     def create_my_annunci_button(self, parent):
         my_annunci_button = tk.Button(parent, text="Visualizza i miei Annunci", command=self.show_my_annunci)
         my_annunci_button.pack(pady=10)
+
+    def create_view_recensioni_button(self, parent):
+        view_recensioni_button = tk.Button(parent, text="Visualizza le mie Recensioni", command=self.show_my_recensioni)
+        view_recensioni_button.pack(pady=10)
 
     def show_my_annunci(self):
         result = my_annunci(self.email)
         if "Errore" in result:
             messagebox.showerror("Errore", result)
-        else:
+        else :
             self.display_my_annunci(result)
 
     def display_my_annunci(self, annunci):
         window = tk.Toplevel(self)
         window.title("I miei Annunci")
-        window.geometry("500x400")  # Dimensione maggiore
+        window.geometry("600x400")
 
         container = tk.Frame(window)
         container.pack(fill=tk.BOTH, expand=True)
@@ -222,10 +177,6 @@ class SellerWindow(tk.Toplevel):
 
         close_button = tk.Button(window, text="Chiudi", command=window.destroy)
         close_button.pack(pady=10)
-
-    def create_view_recensioni_button(self, parent):
-        view_recensioni_button = tk.Button(parent, text="Visualizza le mie Recensioni", command=self.show_my_recensioni)
-        view_recensioni_button.pack(pady=10)
 
     def show_my_recensioni(self):
         result = my_recensioni(self.email)
@@ -267,3 +218,54 @@ class SellerWindow(tk.Toplevel):
 
         close_button = tk.Button(window, text="Chiudi", command=window.destroy)
         close_button.pack(pady=10)
+
+    def create_annuncio(self):
+        titolo = self.titolo_entry.get()
+        descrizione = self.descrizione_entry.get()
+        prezzo = self.prezzo_entry.get()
+        codice = self.codice_entry.get()
+        numero_serie = self.numero_serie_entry.get()
+        descrizione_prodotto = self.desc_prodotto_entry.get()
+        colore = self.colore_entry.get()
+        usato = self.usato_entry.get()
+        condizioni = self.condizioni_entry.get()
+
+        result = create_annuncio(self.email, titolo, descrizione, prezzo, codice, numero_serie, descrizione_prodotto, colore, usato, condizioni)
+        if "Errore" in result:
+            messagebox.showerror("Errore", result)
+        else:
+            messagebox.showinfo("Successo", result)
+
+    def delete_annuncio(self):
+        id_annuncio = self.id_annuncio_delete_entry.get()
+        
+        result = delete_annuncio(self.email, id_annuncio)
+        if "Errore" in result:
+            messagebox.showerror("Errore", result)
+        else:
+            messagebox.showinfo("Successo", result)
+
+    def apply_sconto(self):
+        id_annuncio = self.id_annuncio_sconto_entry.get()
+        sconto = self.sconto_entry.get()
+
+        result = apply_discount(self.email, id_annuncio, sconto)
+        if "Errore" in result:
+            messagebox.showerror("Errore", result)
+        else:
+            messagebox.showinfo("Successo", result)
+
+    def add_specifica(self):
+        id_annuncio = self.id_annuncio_specifica_entry.get()
+        codice = self.codice_specifica_entry.get()
+        numero_serie = self.numero_serie_specifica_entry.get()
+        descrizione_prodotto = self.desc_prodotto_specifica_entry.get()
+        colore = self.colore_specifica_entry.get()
+        usato = self.is_usato_specifica_entry.get()
+        condizioni = self.condizioni_specifica_entry.get()
+
+        result = modify_annuncio(self.email, id_annuncio, codice, numero_serie, descrizione_prodotto, colore, usato, condizioni)
+        if "Errore" in result:
+            messagebox.showerror("Errore", result)
+        else:
+            messagebox.showinfo("Successo", result)

@@ -35,16 +35,6 @@ def generaID():
         return result[0]['id_annuncio'] + 1
     else:
         return 1  # Se non ci sono annunci, inizia da 1
-    
-""" def check_idAnnuncio(id_annuncio, email):
-    query = "SELECT A.id_annuncio, A.email FROM ANNUNCIO as A WHERE A.id_annuncio = %s AND A.email = %s"
-    params = (id_annuncio, email)
-    
-    result = execute_query(query, params)
-    if isinstance(result, str) and "Errore" in result:
-        return False
-    return len(result) > 0
- """
 
 def create_annuncio(email, titolo, descrizione, prezzo, 
                     codice, numeroDiSerie, descrizioneProdotto, colore="-",
@@ -85,7 +75,7 @@ def create_annuncio(email, titolo, descrizione, prezzo,
 
     return "Annuncio creato con successo"
 
-def modify_annuncio(id_annuncio, email,
+def modify_annuncio(email, id_annuncio,
                     codice, numeroDiSerie, descrizioneProdotto, colore="-",
                     isUsato=0, condizioni="-"):
     
