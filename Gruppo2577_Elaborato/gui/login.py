@@ -10,11 +10,10 @@ class LoginWindow(tk.Tk):
         super().__init__()
         self.geometry("800x500") 
         self.title("Login")
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         #per premere invio e fare login
         self.bind('<Return>', self.login_key_return)
-
-        self.protocol("WM_DELETE_WINDOW", self.quit)
 
         frame = tk.Frame(self)
         frame.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
@@ -32,6 +31,9 @@ class LoginWindow(tk.Tk):
         
     def login_key_return(self, event):
         self.login()
+    
+    def on_closing(self):
+        self.destroy()
 
     def login(self):
         email = self.email_entry.get()

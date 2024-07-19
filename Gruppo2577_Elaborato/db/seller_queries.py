@@ -36,9 +36,22 @@ def generaID():
     else:
         return 1  # Se non ci sono annunci, inizia da 1
 
+def check_block(email):
+    query_check_block = """
+    SELECT isBloccato FROM VENDITORE WHERE email = %s
+    """
+    params_check_block = (email,)
+    result_check_block = execute_query(query_check_block, params_check_block, fetch=True)
+    
+    return result_check_block
+
 def create_annuncio(email, titolo, descrizione, prezzo, 
                     codice, numeroDiSerie, descrizioneProdotto, colore="-",
                     isUsato=0, condizioni="-"):
+    
+    blocked = check_block(email)
+    if not blocked or blocked[0]['isBloccato'] == 1:
+        return "Non è possibile creare un annuncio, il venditore è bloccato."
     
     punti_prodotto = int(int(prezzo) * 10)
     id_annuncio = generaID()
@@ -78,6 +91,10 @@ def create_annuncio(email, titolo, descrizione, prezzo,
 def modify_annuncio(email, id_annuncio,
                     codice, numeroDiSerie, descrizioneProdotto, colore="-",
                     isUsato=0, condizioni="-"):
+    
+    blocked = check_block(email)
+    if not blocked or blocked[0]['isBloccato'] == 1:
+        return "Non è possibile modificare alcun annuncio, il venditore è bloccato."
     
     query_check = "SELECT * FROM ANNUNCIO WHERE id_annuncio = %s AND email = %s"
     params_check = (id_annuncio, email)

@@ -9,6 +9,7 @@ class SellerWindow(tk.Toplevel):
         self.email = email
         self.parent = parent
         self.geometry("1000x700")
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
  
         self.create_layout()
 
@@ -26,7 +27,6 @@ class SellerWindow(tk.Toplevel):
         self.create_my_annunci_button(right_frame)
         self.create_view_recensioni_button(right_frame)
         self.create_back_button()
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def on_closing(self):
         self.parent.destroy()
@@ -111,7 +111,7 @@ class SellerWindow(tk.Toplevel):
 
     def create_add_specifica_form(self, parent):
         form_frame = tk.LabelFrame(parent, text="Aggiungi Specifica Prodotto")
-        form_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        form_frame.pack(fill=tk.BOTH, expand=False, padx=5, pady=5)
 
         tk.Label(form_frame, text="ID Annuncio").grid(row=0, column=0, pady=5, padx=5)
         self.id_annuncio_specifica_entry = tk.Entry(form_frame)

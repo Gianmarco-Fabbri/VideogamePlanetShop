@@ -7,6 +7,8 @@ class AdminWindow(tk.Toplevel):
         super().__init__(parent)
         self.title("Pannello Amministratore")
         self.geometry("800x500")
+        self.create_back_button()
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
         
         tk.Label(self, text="Pannello Amministratore", font=("Arial", 14)).pack(pady=10)
         
@@ -17,6 +19,18 @@ class AdminWindow(tk.Toplevel):
 
         unblock_user_button = tk.Button(self, text="Sblocca Venditore", command=self.unblock_user)
         unblock_user_button.pack(pady=5)
+
+    def on_closing(self):
+        self.parent.destroy()
+        self.quit()
+
+    def create_back_button(self):
+        back_button = tk.Button(self, text="←", command=self.go_back)
+        back_button.place(x=10, y=10)
+
+    def go_back(self):
+        self.destroy()
+        self.master.deiconify()
 
     def create_user_form(self):
         form_frame = tk.Frame(self)

@@ -159,9 +159,6 @@ create table TRACCIAMENTO (
      numero int not null,
      id_annuncio int not null,
      nome_magazzino char(20) not null,
-     descrizione char(50) not null,
-     data date not null,
-     ora char(5) not null,
      constraint IDTRACCIAMENTO primary key (id_annuncio, città, cap, via, numero));
 
 create table UTENTE (
