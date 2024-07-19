@@ -30,9 +30,9 @@ create table ACCESSORIO (
      constraint FKPRO_ACC_ID primary key (codice));
 
 create table ACQUIRENTE (
-     isAbbonato boolean not null,
+     isAbbonato boolean not null default false,
      email char(50) not null,
-     puntiSconto int not null,
+     puntiSconto int not null default 0,
      constraint FKUTE_ACQ_ID primary key (email));
 
 create table ADMIN (
@@ -43,7 +43,7 @@ create table ANNUNCIO (
      punti_prodotto int not null,
      id_annuncio int not null,
      titolo char(20) not null,
-     prezzo int not null,
+     prezzo float not null,
      descrizione char(60) not null,
      email char(50) not null,
      sconto int default 0,
@@ -128,7 +128,7 @@ create table RECENSIONE (
      email_acquirente char(50) not null,
      email_venditore char(50) not null,
      descrizione char(100) not null,
-     valutazione int not null,
+     valutazione tinyint not null,
      constraint IDRECENSIONE primary key (email_acquirente, email_venditore));
 
 create table SPECIFICHE_PRODOTTO (
@@ -181,7 +181,7 @@ create table UTENTE (
 
 create table VENDITORE (
      email char(50) not null,
-     isBloccato tinyint not null,
+     isBloccato tinyint not null default 0,
      isNegozio boolean not null,
      constraint FKUTE_VEN_ID primary key (email));
 

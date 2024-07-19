@@ -108,16 +108,16 @@ def modify_annuncio(id_annuncio, email,
     
     # Inserisci il dettaglio del prodotto
     query_dettaglio = """
-    INSERT INTO DETTAGLIO (isUsato, condizioni, id_annuncio, codice, numeroSerie)
-    VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO DETTAGLIO (isUsato, condizioni, id_annuncio, email, codice, numeroSerie)
+    VALUES (%s, %s, %s, %s, %s, %s)
     """
-    params_dettaglio = (isUsato, condizioni, id_annuncio, codice, numeroDiSerie)
+    params_dettaglio = (isUsato, condizioni, id_annuncio, email, codice, numeroDiSerie)
     
     result_dettaglio = execute_query(query_dettaglio, params_dettaglio)
     if isinstance(result_dettaglio, str) and "Errore" in result_dettaglio:
         return result_dettaglio
     
-    return "Specifiche del prodotto aggiunte con successo all'annuncio."
+    return "Specifiche del prodotto aggiunte all'annuncio."
 
 def delete_annuncio(email, id_annuncio):
     query1 = "DELETE FROM DETTAGLIO WHERE id_annuncio = %s AND email = %s"
@@ -154,4 +154,10 @@ def apply_discount(email, id_annuncio, sconto):
 def my_annunci(email):
     query = "SELECT * FROM ANNUNCIO WHERE email = %s"
     params = (email,)
-    return execute_query(query, params)
+    return execute_query(query, params, fetch=True)
+
+def my_recensioni(email):
+    query = "SELECT * FROM RECENSIONE WHERE email_venditore = %s"
+    params = (email,)
+    
+    return execute_query(query, params, fetch=True)

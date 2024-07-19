@@ -222,3 +222,48 @@ class SellerWindow(tk.Toplevel):
 
         close_button = tk.Button(window, text="Chiudi", command=window.destroy)
         close_button.pack(pady=10)
+
+    def create_view_recensioni_button(self, parent):
+        view_recensioni_button = tk.Button(parent, text="Visualizza le mie Recensioni", command=self.show_my_recensioni)
+        view_recensioni_button.pack(pady=10)
+
+    def show_my_recensioni(self):
+        result = my_recensioni(self.email)
+        if "Errore" in result:
+            messagebox.showerror("Errore", result)
+        else:
+            self.display_my_recensioni(result)
+
+    def display_my_recensioni(self, recensioni):
+        window = tk.Toplevel(self)
+        window.title("Le mie Recensioni")
+        window.geometry("600x400")
+
+        container = tk.Frame(window)
+        container.pack(fill=tk.BOTH, expand=True)
+
+        canvas = tk.Canvas(container)
+        scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        tk.Label(scrollable_frame, text="Le mie Recensioni", font=("Arial", 14)).pack(pady=10)
+
+        for recensione in recensioni:
+            text = f"Da: {recensione['email_acquirente']}, Valutazione: {recensione['valutazione']}, Descrizione: {recensione['descrizione']}"
+            tk.Label(scrollable_frame, text=text).pack(pady=5, padx=10)
+
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        close_button = tk.Button(window, text="Chiudi", command=window.destroy)
+        close_button.pack(pady=10)
