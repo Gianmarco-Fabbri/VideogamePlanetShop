@@ -30,6 +30,16 @@ def add_payment_method(email, tipologia, circuito, codice, scadenza):
     params = (tipologia, circuito, codice, scadenza, email)
     return execute_query(query, params)
 
+def has_payment_method(email):
+    query = "SELECT COUNT(*) as count FROM METODO_PAGAMENTO WHERE email = %s"
+    params = (email,)
+    result = execute_query(query, params, fetch=True)
+    
+    if result and result[0]['count'] > 0:
+        return True
+    else:
+        return False
+
 def generaID():
     query = """
     SELECT idOrdine 
@@ -45,6 +55,10 @@ def generaID():
         return 1  # Se non ci sono 0 ordini, inizia da 1
 
 def place_order(email, id_annunci):
+
+    if not has_payment_method(email):
+        return "Errore: Nessun metodo di pagamento registrato. Aggiungi un metodo di pagamento prima di effettuare un ordine."
+    
     idOrdine = generaID()
 
     query_ordine = "INSERT INTO ORDINE (idOrdine, email, codStato) VALUES (%s, %s, %s)"
@@ -101,6 +115,9 @@ def get_subscription_options():
     return options
 
 def subscribe(email, tipoAbbonamento):
+    if not has_payment_method(email):
+        return "Nessun metodo di pagamento registrato. Aggiungi un metodo di pagamento prima di abbonarti."
+
     query_check_abbonamento = """
     SELECT COUNT(*) as abbonamento_attivo
     FROM STORICO
