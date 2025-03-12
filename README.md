@@ -1,3 +1,3 @@
 # VideoGamePlanetShop
 ## DBMS project
-This is a university project to demonstrate the skills, as described in the course "Database", such as database design and development of an application capable of interacting with it
+Progetto universitario dato a dimostrare le capacità progettuali in ambito di database relazionali con uso di python per sviluppare un'intrefaccia grafica intuitiva per comunicare con il database ed effettuare operazioni utili.
